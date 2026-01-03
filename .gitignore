@@ -1,5 +1,32 @@
-./idea/
-./DatingAPI/bin/
-./DatingAPI/obj/
-./DatingAPI/appsettings.json
+# Rider / IntelliJ
+.idea/
+*.iml
 
+# Build output
+**/bin/
+**/obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio / Rider launch settings
+**/launchSettings.json
+
+# DotNet secrets
+secrets.json
+
+# appsettings (если не хочешь коммитить конфиги с паролями)
+**/appsettings.json
+
+# Rider / JetBrains caches
+/.idea/
+*.iws
+*.ipr
+*.iws
+
+# OS generated files
+.DS_Store
+Thumbs.db
