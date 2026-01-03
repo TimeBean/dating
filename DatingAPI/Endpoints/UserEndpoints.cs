@@ -1,5 +1,5 @@
 using DatingAPI.Data;
-using DatingAPI.Models;
+using DatingContracts;
 using Microsoft.EntityFrameworkCore;
 
 namespace DatingAPI.Endpoints
@@ -14,29 +14,32 @@ namespace DatingAPI.Endpoints
             app.MapGet("/api/users/{id:int}", async (int id, AppDatabaseContext db) =>
             {
                 var user = await db.Users.FindAsync(id);
+                
                 return user is not null ? Results.Ok(user) : Results.NotFound();
             });
 
-            app.MapPost("/api/users", async (User user, AppDatabaseContext db) =>
+            app.MapPost("/api/users", async (UserDto userDto, AppDatabaseContext db) =>
             {
-                db.Users.Add(user);
+                db.Users.Add(userDto);
                 await db.SaveChangesAsync();
-                return Results.Created($"/api/users/{user.Id}", user);
+                
+                return Results.Created($"/api/users/{userDto.Id}", userDto);
             });
 
-            app.MapPut("/api/users/{id:int}", async (int id, User updatedUser, AppDatabaseContext db) =>
+            app.MapPut("/api/users/{id:int}", async (int id, UserDto updatedUserDto, AppDatabaseContext db) =>
             {
                 var user = await db.Users.FindAsync(id);
                 if (user is null) 
                     return Results.NotFound();
 
-                user.Name = updatedUser.Name;
-                user.Description = updatedUser.Description;
-                user.Age = updatedUser.Age;
-                user.Latitude = updatedUser.Latitude;
-                user.Longitude = updatedUser.Longitude;
+                user.Name = updatedUserDto.Name;
+                user.Description = updatedUserDto.Description;
+                user.Age = updatedUserDto.Age;
+                user.Latitude = updatedUserDto.Latitude;
+                user.Longitude = updatedUserDto.Longitude;
 
                 await db.SaveChangesAsync();
+                
                 return Results.NoContent();
             });
 
@@ -48,6 +51,7 @@ namespace DatingAPI.Endpoints
 
                 db.Users.Remove(user);
                 await db.SaveChangesAsync();
+                
                 return Results.NoContent();
             });
         }

@@ -2,6 +2,12 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatingAPI", "DatingAPI\DatingAPI.csproj", "{EA0CFC18-3DF1-4CD7-B5C9-319FFB10001A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatingAPIWrapper", "DatingAPIWrapper\DatingAPIWrapper.csproj", "{3B6716FA-8D98-44E5-8941-7B91CEDF4739}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatingContracts", "DatingContracts\DatingContracts.csproj", "{F85C4147-7435-4A53-A685-219ED45944CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WrapperConsoleTest", "WrapperConsoleTest\WrapperConsoleTest.csproj", "{E41EDAF9-4CF2-454E-92E6-46713E5146D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +18,17 @@ Global
 		{EA0CFC18-3DF1-4CD7-B5C9-319FFB10001A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA0CFC18-3DF1-4CD7-B5C9-319FFB10001A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA0CFC18-3DF1-4CD7-B5C9-319FFB10001A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B6716FA-8D98-44E5-8941-7B91CEDF4739}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B6716FA-8D98-44E5-8941-7B91CEDF4739}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B6716FA-8D98-44E5-8941-7B91CEDF4739}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B6716FA-8D98-44E5-8941-7B91CEDF4739}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F85C4147-7435-4A53-A685-219ED45944CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F85C4147-7435-4A53-A685-219ED45944CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F85C4147-7435-4A53-A685-219ED45944CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F85C4147-7435-4A53-A685-219ED45944CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E41EDAF9-4CF2-454E-92E6-46713E5146D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E41EDAF9-4CF2-454E-92E6-46713E5146D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E41EDAF9-4CF2-454E-92E6-46713E5146D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E41EDAF9-4CF2-454E-92E6-46713E5146D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
