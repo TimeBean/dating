@@ -26,9 +26,12 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<ITelegramBotClient>(_ => new TelegramBotClient(token));
         services.AddSingleton<IUserSessionRepository, InMemorySessionRepository>();
         services.AddHostedService<TelegramBotHostedService>();
+        services.AddHttpClient();
+        services.AddSingleton<GeoService>();
         services.AddSingleton<IMessageHandler, DialogHandler>();
         services.AddSingleton<IDialogStep, AskNameStep>();
         services.AddSingleton<IDialogStep, AskAgeStep>();
+        services.AddSingleton<IDialogStep, AskForPlace>();
     })
     .ConfigureLogging(l => l.AddConsole())
     .Build();

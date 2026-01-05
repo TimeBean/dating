@@ -10,13 +10,13 @@ public class AskAgeStep : IDialogStep
 
     public async Task HandleAsync(ITelegramBotClient bot, UserSession session, Message message, CancellationToken ct)
     {
-        session.Age = Int32.Parse(message.Text);
+        session.Age = int.Parse(message.Text);
 
-        session.State = DialogState.WaitingForSetupComplite;
+        session.State = DialogState.WaitingForPlace;
 
         await bot.SendMessage(
             message.Chat.Id,
-            $"Ясно, {session.Name}. Тебе {session.Age} лет.",
+            $"Ясно, {session.Name}. Тебе {session.Age} лет. Откуда ты?",
             cancellationToken: ct
         );
     }

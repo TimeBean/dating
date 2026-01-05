@@ -14,7 +14,6 @@ namespace DatingTelegramBot.Services
     {
         private readonly ITelegramBotClient _bot;
         private readonly ILogger<TelegramBotHostedService> _logger;
-        private readonly IEnumerable<IUpdateHandler> _handlers;
         private readonly IUserSessionRepository _repository;
         private readonly IMessageHandler _messageHandler;
 
@@ -22,7 +21,6 @@ namespace DatingTelegramBot.Services
         {
             _bot = bot;
             _logger = logger;
-            _handlers = handlers;
             _messageHandler = messageHandler;
             _repository = repository;
         }
