@@ -6,8 +6,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatingAPIWrapper", "DatingA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatingContracts", "DatingContracts\DatingContracts.csproj", "{F85C4147-7435-4A53-A685-219ED45944CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WrapperConsoleTest", "WrapperConsoleTest\WrapperConsoleTest.csproj", "{E41EDAF9-4CF2-454E-92E6-46713E5146D8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatingTelegramBot", "DatingTelegramBot\DatingTelegramBot.csproj", "{46862414-89AD-4CF9-BE67-25DB07CCE885}"
 EndProject
 Global
@@ -28,10 +26,6 @@ Global
 		{F85C4147-7435-4A53-A685-219ED45944CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F85C4147-7435-4A53-A685-219ED45944CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F85C4147-7435-4A53-A685-219ED45944CC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E41EDAF9-4CF2-454E-92E6-46713E5146D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E41EDAF9-4CF2-454E-92E6-46713E5146D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E41EDAF9-4CF2-454E-92E6-46713E5146D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E41EDAF9-4CF2-454E-92E6-46713E5146D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{46862414-89AD-4CF9-BE67-25DB07CCE885}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{46862414-89AD-4CF9-BE67-25DB07CCE885}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46862414-89AD-4CF9-BE67-25DB07CCE885}.Release|Any CPU.ActiveCfg = Release|Any CPU

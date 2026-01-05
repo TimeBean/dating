@@ -8,8 +8,8 @@ namespace DatingTelegramBot.Handlers;
 
 public class DialogHandler : IMessageHandler
 {
-    private readonly IEnumerable<IDialogStep> _steps;         // Все зарегистрированные шаги
-    private readonly IUserSessionRepository _repository;      // Репозиторий для состояния пользователей
+    private readonly IEnumerable<IDialogStep> _steps; 
+    private readonly IUserSessionRepository _repository;
 
     public DialogHandler(IEnumerable<IDialogStep> steps, IUserSessionRepository repository)
     {

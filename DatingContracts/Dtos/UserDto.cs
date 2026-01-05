@@ -1,11 +1,14 @@
-﻿namespace DatingContracts;
+﻿using DatingTelegramBot.Models;
+
+namespace DatingContracts;
 
 public class UserDto
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Description { get; set; } = string.Empty; 
-    public int Age { get; set; }
+    public long ChatId { get; set; }
+    public string? Name { get; set; }
+    public string? Description { get; set; } 
+    public int? Age { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
+    public DialogState State { get; set; }
 }

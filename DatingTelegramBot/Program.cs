@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 
 var host = Host.CreateDefaultBuilder(args)
-    .ConfigureAppConfiguration((context, configurationBuilder) =>
+    .ConfigureAppConfiguration(configurationBuilder =>
     {
         configurationBuilder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
         configurationBuilder.AddEnvironmentVariables();

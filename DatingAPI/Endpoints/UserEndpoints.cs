@@ -23,7 +23,7 @@ namespace DatingAPI.Endpoints
                 db.Users.Add(userDto);
                 await db.SaveChangesAsync();
                 
-                return Results.Created($"/api/users/{userDto.Id}", userDto);
+                return Results.Created($"/api/users/{userDto.ChatId}", userDto);
             });
 
             app.MapPut("/api/users/{id:int}", async (int id, UserDto updatedUserDto, AppDatabaseContext db) =>
