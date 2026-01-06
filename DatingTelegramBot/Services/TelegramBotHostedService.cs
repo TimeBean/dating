@@ -18,8 +18,7 @@ namespace DatingTelegramBot.Services
         private readonly IUserSessionRepository _repository;
         private readonly IMessageHandler _messageHandler;
 
-        public TelegramBotHostedService(ITelegramBotClient bot, ILogger<TelegramBotHostedService> logger,
-            IEnumerable<IUpdateHandler> handlers, IMessageHandler messageHandler, IUserSessionRepository repository)
+        public TelegramBotHostedService(ITelegramBotClient bot, ILogger<TelegramBotHostedService> logger, IMessageHandler messageHandler, IUserSessionRepository repository)
         {
             _bot = bot;
             _logger = logger;
@@ -48,22 +47,45 @@ namespace DatingTelegramBot.Services
                     var message = update.Message;
                     _logger.LogInformation("Received from {User}: {Text}", message.From.Username, message.Text);
                     
-                    if (update.Message?.Text != null && message.Text.Contains("/start"))
+                    if (update.Message?.Text != null)
                     {
-                        var session = await _repository.GetOrCreate(message.Chat.Id);
+                        if (message!.Text!.Contains("/start") || message.Text.Contains("/reset"))
+                        {
+                            var session = await _repository.GetOrCreate(message.Chat.Id);
 
-                        session.State = DialogState.WaitingForName;
-                        session.Name = null;
-                        session.Age = null;
+                            if (session.Name != null && !message.Text.Contains("/reset"))
+                            {
+                                await botClient.SendMessage(
+                                    message.Chat.Id,
+                                    await GetProfileText(botClient,  message.Chat.Id, ct),
+                                    cancellationToken: ct
+                                );
+                            
+                                return;
+                            }
 
-                        await _repository.Update(session);
+                            session.State = DialogState.WaitingForName;
+                            session.Name = null;
+                            session.Age = null;
 
-                        await botClient.SendMessage(
-                            message.Chat.Id,
-                            "Привет! Давай начнем. Как тебя зовут?",
-                            cancellationToken: ct
-                        );
-                        return;
+                            await _repository.Update(session);
+
+                            await botClient.SendMessage(
+                                message.Chat.Id,
+                                "Привет! Давай начнем. Как тебя зовут?",
+                                cancellationToken: ct
+                            );
+                            return;
+                        }
+                        if (message.Text.Contains("/profile"))
+                        {
+                            await botClient.SendMessage(
+                                message.Chat.Id,
+                                await GetProfileText(botClient, message.Chat.Id, ct),
+                                cancellationToken: ct
+                            );
+                            return;
+                        }
                     }
                 }
                 
@@ -71,11 +93,23 @@ namespace DatingTelegramBot.Services
                 _logger.LogInformation("Handled message from {ChatId}", update.Message?.Chat.Id == null ? update.Message?.Chat.Id  : update.CallbackQuery?.From.Id);
         }
 
-        private Task HandleErrorAsync(ITelegramBotClient bot, Exception exception, CancellationToken cancellationToken)
+        private Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
             _logger.LogError(exception, "Telegram polling error");
 
             return Task.CompletedTask;
+        }
+
+        private async Task<string> GetProfileText(ITelegramBotClient botClient, long chatId, CancellationToken ct)
+        {
+            var session = await _repository.GetOrCreate(chatId);
+
+            var profileText = string.Empty;
+
+            profileText +=  "Ваш профиль выглядит так:\n" + 
+                           $"{session.Name}, {session.Age} - {session.Description} ";
+            
+            return profileText;
         }
     }
 }
