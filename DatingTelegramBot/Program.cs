@@ -33,11 +33,10 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddHttpClient<Wrapper>((sp, client) =>
         {
             var options = sp.GetRequiredService<IOptions<WrapperOption>>().Value;
-
             client.BaseAddress = new Uri(options.BaseUrl);
-            client.Timeout = TimeSpan.FromSeconds(10);
+            client.Timeout = TimeSpan.FromSeconds(5);
         });
-        services.AddSingleton<IUserSessionRepository, InMemorySessionRepository>();
+        services.AddSingleton<IUserSessionRepository, DatabaseSessionRepository>();
         services.AddHostedService<TelegramBotHostedService>();
         services.AddHttpClient();
         services.AddSingleton<GeoService>();

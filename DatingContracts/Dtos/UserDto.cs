@@ -8,5 +8,5 @@ public class UserDto
     public int? Age { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
-    public DialogState? State { get; set; }
+    public DialogState State { get; set; }
 }

@@ -51,13 +51,13 @@ namespace DatingTelegramBot.Services
                 {
                     if (message.Text.StartsWith("/start"))
                     {
-                        var session = _repository.GetOrCreate(message.Chat.Id);
+                        var session = await _repository.GetOrCreate(message.Chat.Id);
 
                         session.State = DialogState.WaitingForName;
                         session.Name = null;
                         session.Age = null;
                         
-                        _repository.Update(session);
+                        await _repository.Update(session);
 
                         await botClient.SendMessage(
                             message.Chat.Id,

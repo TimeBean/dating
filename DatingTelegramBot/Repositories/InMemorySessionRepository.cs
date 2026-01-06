@@ -8,7 +8,7 @@ public class InMemorySessionRepository : IUserSessionRepository
 {
     private readonly ConcurrentDictionary<long, UserSession> _sessions = new();
 
-    public UserSession GetOrCreate(long chatId)
+    public async Task<UserSession> GetOrCreate(long chatId)
     {
         return _sessions.GetOrAdd(chatId, id => new UserSession
         {
@@ -17,7 +17,7 @@ public class InMemorySessionRepository : IUserSessionRepository
         });
     }
 
-    public void Update(UserSession session)
+    public async Task Update(UserSession session)
     {
         _sessions[session.ChatId] = session;
     }

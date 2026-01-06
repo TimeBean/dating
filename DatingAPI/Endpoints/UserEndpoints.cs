@@ -76,6 +76,9 @@ namespace DatingAPI.Endpoints
                 if (updateUser.Longitude.HasValue)
                     user.Longitude = updateUser.Longitude.Value;
 
+                if (updateUser.State.HasValue)
+                    user.State = updateUser.State.Value;
+
                 await db.SaveChangesAsync();
                 return Results.NoContent();
             });

@@ -19,19 +19,17 @@ public class DialogHandler : IMessageHandler
 
     public async Task HandleAsync(ITelegramBotClient bot, Message message, CancellationToken ct)
     {
-        var session = _repository.GetOrCreate(message.Chat.Id);
+        var session = await _repository.GetOrCreate(message.Chat.Id);
 
         var step = _steps.FirstOrDefault(s => s.State == session.State);
 
-        if (step != null)
+        if (step == null)
         {
-            await step.HandleAsync(bot, session, message, ct);
+            step = new AskNameStep();
+        }
+        
+        await step.HandleAsync(bot, session, message, ct);
 
-            _repository.Update(session);
-        }
-        else
-        {
-            throw new WrongStateException();
-        }
+        await _repository.Update(session);
     }
 }

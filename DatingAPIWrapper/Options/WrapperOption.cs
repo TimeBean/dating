@@ -2,8 +2,8 @@ namespace DatingAPIWrapper.Options;
 
 public class WrapperOption
 {
-    public string BaseUrl { get; set; }
-    public TimeSpan Timeout { get; set; }
+    public string BaseUrl { get; set; } = null!;
+    public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
 
     public WrapperOption() { }
     

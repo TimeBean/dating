@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using DatingContracts;
 
 namespace DatingAPI.Models;
@@ -6,6 +7,7 @@ namespace DatingAPI.Models;
 public class User
 {
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public long ChatId { get; set; }
     public string? Name { get; set; }
     public string? Description { get; set; } 

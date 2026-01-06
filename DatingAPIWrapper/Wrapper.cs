@@ -1,25 +1,32 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using DatingAPIWrapper.Exceptions;
 using DatingAPIWrapper.Options;
 using DatingContracts;
 using DatingContracts.Dtos;
+using Microsoft.Extensions.Options;
 
 namespace DatingAPIWrapper;
 
 public class Wrapper
 {
     private readonly HttpClient _httpClient;
+    private readonly WrapperOption _wrapperOption;
 
-    public Wrapper(HttpClient http, WrapperOption options)
+    public Wrapper(HttpClient http, IOptions<WrapperOption> wrapperOption)
     {
         _httpClient = http;
-        _httpClient.BaseAddress = new Uri(options.BaseUrl);
-        _httpClient.Timeout = options.Timeout;
+        _wrapperOption = wrapperOption.Value;
+        _httpClient.BaseAddress = new Uri(_wrapperOption.BaseUrl);
+        _httpClient.Timeout = _wrapperOption.Timeout;
     }
 
     protected async Task<T> GetAsync<T>(string url)
     {
         var response = await _httpClient.GetAsync(url);
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+            return default;
 
         if (!response.IsSuccessStatusCode)
             throw await ApiException.FromResponse(response);
@@ -71,18 +78,18 @@ public class Wrapper
     public Task<List<UserDto>> GetUsersAsync()
         => GetAsync<List<UserDto>>("/api/users");
 
-    public Task<UserDto> GetUserAsync(int id)
-        => GetAsync<UserDto>($"/api/users/{id}");
+    public Task<UserDto?> GetUserAsync(long id)
+        => GetAsync<UserDto?>($"/api/users/{id}");
 
     public Task<UserDto> CreateUserAsync(UserDto user)
         => PostAsync<UserDto, UserDto>("/api/users", user);
 
-    public Task UpdateUserAsync(int id, UserDto user)
+    public Task UpdateUserAsync(long id, UserDto user)
         => PutAsync($"/api/users/{id}", user);
 
-    public Task DeleteUserAsync(int id)
+    public Task DeleteUserAsync(long id)
         => DeleteAsync($"/api/users/{id}");
     
-    public Task PatchUserAsync(int id, UpdateUser update)
+    public Task PatchUserAsync(long id, UpdateUser update)
         => PatchAsync($"/api/users/{id}", update);
 }
