@@ -21,7 +21,7 @@ public class AskForDescription : IDialogStep
         
         await bot.SendMessage(
             update.Message!.Chat.Id,
-            $"Данные профиля: \n{session.Name}\n{session.Age}\n{session.Description}\n{session.Latitude} {session.Longitude}",
+            $"Создание профиля завершено.",
             cancellationToken: ct
         );
     }

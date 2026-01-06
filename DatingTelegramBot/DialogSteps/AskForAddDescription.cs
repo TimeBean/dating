@@ -35,7 +35,7 @@ public class AskForAddDescription : IDialogStep
                 
                 await bot.SendMessage(
                     update.CallbackQuery.From.Id,
-                    $"Данные профиля: \n{session.Name}\n{session.Age}\n{session.Latitude} {session.Longitude}",
+                    $"Создание профиля завершено.",
                     cancellationToken: ct
                 );
             }

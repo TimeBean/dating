@@ -34,7 +34,7 @@ public class AskForPlace : IDialogStep
 
             await bot.SendMessage(
                 chatId: update.Message.Chat.Id,
-                text: $"Ясно, {session.Name}. Тебе {session.Age} лет. И ты из {session.Latitude}, {session.Longitude}",
+                text: $"Так и запишем - {session.Latitude}, {session.Longitude}!\nХочешь добавить описание?",
                 replyMarkup: new InlineKeyboardMarkup()
                 { 
                     InlineKeyboard = new List<IEnumerable<InlineKeyboardButton>>()
