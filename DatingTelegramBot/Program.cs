@@ -13,43 +13,44 @@ using Microsoft.Extensions.Options;
 using Telegram.Bot;
 
 var host = Host.CreateDefaultBuilder(args)
-    .ConfigureAppConfiguration(configurationBuilder =>
+    .ConfigureAppConfiguration(cb =>
     {
-        configurationBuilder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-        configurationBuilder.AddEnvironmentVariables();
+        cb.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
     })
     .ConfigureServices((context, services) =>
     {
         var token = context.Configuration["TG_TOKEN"] ?? context.Configuration["Token"];
-
         if (string.IsNullOrWhiteSpace(token))
-            throw new InvalidOperationException(
-                "Telegram token not found.");
+            throw new ArgumentException("Telegram token missing in configuration.");
 
         services.AddSingleton<ITelegramBotClient>(_ => new TelegramBotClient(token));
-        services.AddSingleton<ITelegramBotClient>(_ => new TelegramBotClient(token));
-        services.Configure<WrapperOption>(
-            context.Configuration.GetSection("DatingApi")
-        );
+
+        services.Configure<WrapperOption>(context.Configuration.GetSection("DatingApi"));
         services.AddHttpClient<Wrapper>((sp, client) =>
         {
             var options = sp.GetRequiredService<IOptions<WrapperOption>>().Value;
             client.BaseAddress = new Uri(options.BaseUrl);
             client.Timeout = TimeSpan.FromSeconds(5);
         });
+
         services.AddSingleton<IUserSessionRepository, DatabaseSessionRepository>();
         services.AddHostedService<TelegramBotHostedService>();
-        services.AddHttpClient();
         services.AddSingleton<GeoService>();
         services.AddSingleton<IMessageHandler, DialogHandler>();
-        services.AddSingleton<IDialogStep, AskNameStep>();
-        services.AddSingleton<IDialogStep, AskAgeStep>();
-        services.AddSingleton<IDialogStep, AskForPlace>();
-        services.AddSingleton<IDialogStep, AskForAddDescription>();
-        services.AddSingleton<IDialogStep, AskForDescription>();
-        services.AddTransient<ICommandHandler, CommandHandler>();
-        services.AddTransient<ICommand, StartCommand>();
-        services.AddTransient<ICommand, ProfileCommand>();
+
+        var dialogStepType = typeof(IDialogStep);
+        foreach (var type in typeof(Program).Assembly.GetTypes()
+                     .Where(t => dialogStepType.IsAssignableFrom(t) && t.IsClass))
+        {
+            services.AddSingleton(typeof(IDialogStep), type);
+        }
+
+        var commandType = typeof(ICommand);
+        foreach (var type in typeof(Program).Assembly.GetTypes()
+                     .Where(t => commandType.IsAssignableFrom(t) && t.IsClass))
+        {
+            services.AddTransient(typeof(ICommand), type);
+        }
     })
     .ConfigureLogging(l => l.AddConsole())
     .Build();
