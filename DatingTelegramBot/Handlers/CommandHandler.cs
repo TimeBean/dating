@@ -21,8 +21,6 @@ public class CommandHandler : ICommandHandler
 
     public async Task HandleAsync(ITelegramBotClient bot, Update update, CancellationToken ct)
     {
-        Console.WriteLine("Вызван CommandHandler");
-        
         if (update.Message?.Text?.StartsWith("/") != true)
             return;
         

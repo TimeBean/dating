@@ -46,18 +46,14 @@ namespace DatingTelegramBot.Services
 
         private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken ct)
         {
-            Console.WriteLine($"UPDATE ID: {update.Id} {update.Type} {update.Message?.Text?.StartsWith("/")}");
-            
             switch (update.Type)
             {
                 case UpdateType.Message when update.Message?.Text?.StartsWith("/") == true:
-                    Console.WriteLine("вызываю _commandHandler");
                     await _commandHandler.HandleAsync(botClient, update, ct);
                     break;
 
                 case UpdateType.Message:
                 case UpdateType.CallbackQuery:
-                    Console.WriteLine("вызываю _dialogHandler");
                     await _dialogHandler.HandleAsync(botClient, update, ct);
                     break;
 

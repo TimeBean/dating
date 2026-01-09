@@ -8,6 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.19" />
+      <PackageReference Include="AWSSDK.S3" Version="4.0.16.4" />
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.1" />
       <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.1" />
       <PackageReference Include="Nominatim.API" Version="2.1.0" />

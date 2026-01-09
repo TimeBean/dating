@@ -3,6 +3,7 @@ using DatingAPIWrapper.Options;
 using DatingTelegramBot.Commands;
 using DatingTelegramBot.DialogSteps;
 using DatingTelegramBot.Handlers;
+using DatingTelegramBot.ObjectStores;
 using DatingTelegramBot.Repositories;
 using DatingTelegramBot.Services;
 using Microsoft.Extensions.Configuration;
@@ -32,25 +33,20 @@ var host = Host.CreateDefaultBuilder(args)
             client.BaseAddress = new Uri(options.BaseUrl);
             client.Timeout = TimeSpan.FromSeconds(5);
         });
-
         services.AddSingleton<IUserSessionRepository, DatabaseSessionRepository>();
         services.AddHostedService<TelegramBotHostedService>();
         services.AddSingleton<GeoService>();
+        services.Configure<S3Options>(context.Configuration.GetSection("S3"));
+        services.AddSingleton<IObjectStore, MinIoObjectStore>();
         services.AddSingleton<IMessageHandler, DialogHandler>();
-
-        var dialogStepType = typeof(IDialogStep);
-        foreach (var type in typeof(Program).Assembly.GetTypes()
-                     .Where(t => dialogStepType.IsAssignableFrom(t) && t.IsClass))
-        {
-            services.AddSingleton(typeof(IDialogStep), type);
-        }
-
-        var commandType = typeof(ICommand);
-        foreach (var type in typeof(Program).Assembly.GetTypes()
-                     .Where(t => commandType.IsAssignableFrom(t) && t.IsClass))
-        {
-            services.AddTransient(typeof(ICommand), type);
-        }
+        services.AddSingleton<IDialogStep, AskNameStep>();
+        services.AddSingleton<IDialogStep, AskAgeStep>();
+        services.AddSingleton<IDialogStep, AskForPlace>();
+        services.AddSingleton<IDialogStep, AskForAddDescription>();
+        services.AddSingleton<IDialogStep, AskForDescription>();
+        services.AddTransient<ICommandHandler, CommandHandler>();
+        services.AddTransient<ICommand, StartCommand>();
+        services.AddTransient<ICommand, ProfileCommand>();
     })
     .ConfigureLogging(l => l.AddConsole())
     .Build();
