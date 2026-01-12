@@ -7,16 +7,16 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace DatingTelegramBot.DialogSteps;
 
-public class AskForAddDescription : IDialogStep
+public class AskForAddPictures : IDialogStep
 {
-    public DialogState State => DialogState.WaitingForAddDescription;
+    public DialogState State => DialogState.WaitingForPictures;
 
     public async Task HandleAsync(ITelegramBotClient bot, UserSession session, Update update, CancellationToken ct)
     {
         if (update.Type != UpdateType.CallbackQuery)
             return;
 
-        if (update.CallbackQuery!.Data == "AddDescriptionAgree")
+        if (update.CallbackQuery!.Data == "AddImagesAgree")
         {
             session.State = DialogState.WaitingForDescription;
 
@@ -28,7 +28,7 @@ public class AskForAddDescription : IDialogStep
                 cancellationToken: ct
             );
         }
-        else if (update.CallbackQuery.Data == "AddDescriptionDisagree")
+        else if (update.CallbackQuery.Data == "AddImagesDisagree")
         {
             session.State = DialogState.WaitingForAddPictures;
 
@@ -37,17 +37,6 @@ public class AskForAddDescription : IDialogStep
             await bot.SendMessage(
                 update.CallbackQuery.From.Id,
                 $"Хотите добавить фото (1-3)?",
-                replyMarkup: new InlineKeyboardMarkup()
-                {
-                    InlineKeyboard = new List<IEnumerable<InlineKeyboardButton>>()
-                    {
-                        new []
-                        {
-                            new InlineKeyboardButton("Да", "AddDescriptionAgree"),
-                            new InlineKeyboardButton("Нет", "AddDescriptionDisagree"),
-                        }
-                    }
-                },
                 cancellationToken: ct
             );
         }

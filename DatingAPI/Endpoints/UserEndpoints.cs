@@ -58,26 +58,15 @@ namespace DatingAPI.Endpoints
             app.MapPatch("/api/users/{chatId:long}", async (long chatId, UpdateUser updateUser, AppDatabaseContext db) =>
             {
                 var user = await db.Users.FindAsync(chatId);
-                if (user is null)
+                if (user is null) 
                     return Results.NotFound();
 
-                if (updateUser.Name is not null)
-                    user.Name = updateUser.Name;
-
-                if (updateUser.Description is not null)
-                    user.Description = updateUser.Description;
-
-                if (updateUser.Age.HasValue)
-                    user.Age = updateUser.Age.Value;
-
-                if (updateUser.Latitude.HasValue)
-                    user.Latitude = updateUser.Latitude.Value;
-
-                if (updateUser.Longitude.HasValue)
-                    user.Longitude = updateUser.Longitude.Value;
-
-                if (updateUser.State.HasValue)
-                    user.State = updateUser.State.Value;
+                if (updateUser.Name is not null) user.Name = updateUser.Name;
+                if (updateUser.Description is not null) user.Description = updateUser.Description;
+                if (updateUser.Age.HasValue) user.Age = updateUser.Age.Value;
+                if (updateUser.Latitude.HasValue) user.Latitude = updateUser.Latitude.Value;
+                if (updateUser.Longitude.HasValue) user.Longitude = updateUser.Longitude.Value;
+                if (updateUser.State.HasValue) user.State = updateUser.State.Value;
 
                 await db.SaveChangesAsync();
                 return Results.NoContent();

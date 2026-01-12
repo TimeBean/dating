@@ -12,13 +12,6 @@ builder.Services.AddDbContext<AppDatabaseContext>(options =>
 
 var app = builder.Build();
 
-/*using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDatabaseContext>();
-    db.Database.EnsureDeleted();
-    db.Database.EnsureCreated();
-}*/
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

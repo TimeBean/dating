@@ -2,7 +2,6 @@ namespace DatingContracts.Dtos;
 
 public class UpdateUser
 {
-    public long? ChatId { get; set; }
     public string? Name { get; set; }
     public string? Description { get; set; } 
     public int? Age { get; set; }

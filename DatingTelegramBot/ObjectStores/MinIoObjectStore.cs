@@ -1,110 +1,138 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
 using DatingTelegramBot.Models;
 using Microsoft.Extensions.Options;
 
-namespace DatingTelegramBot.ObjectStores;
-
-public class MinIoObjectStore : IObjectStore
+namespace DatingTelegramBot.ObjectStores
 {
-    private readonly IAmazonS3 _s3Client;
-    private readonly IOptions<S3Options> _s3Options;
-    
-    public MinIoObjectStore(IAmazonS3 s3Client, IOptions<S3Options> options)
+    public class MinIoObjectStore : IObjectStore
     {
-        _s3Client = s3Client;
-        _s3Options = options;
-    }
+        private readonly IAmazonS3 _s3Client;
+        private readonly IOptions<S3Options> _s3Options;
 
-    public async Task<string> Put(long userId, FileStream fileStream, CancellationToken ct)
-    {
-        var guid = Guid.NewGuid();
-        var objectKey = $"users/{userId}/photos/{guid}.jpg";
+        private static string GetUserPhotosFolder(long userId) => $"users/{userId}/photos/";
+        private static string GetUserPhotoKey(long userId, Guid fileGuid) => $"{GetUserPhotosFolder(userId)}{fileGuid}.jpg";
 
-        await _s3Client.PutObjectAsync(new PutObjectRequest
+        public MinIoObjectStore(IAmazonS3 s3Client, IOptions<S3Options> options)
         {
-            BucketName = _s3Options.Value.BucketName,
-            Key = objectKey,
-            InputStream = fileStream,
-            ContentType = "image/jpeg"
-        }, ct);
-
-        return objectKey;
-    }
-    
-    /// <summary>
-    /// Get all user's pictures.
-    /// </summary>
-    /// <returns>Streams. The calling code MUST call Dispose.</returns>
-    public async Task<FileStream> Get(UserSession userSession, CancellationToken ct)
-    {
-        var objectKey = $"users/{userSession.ChatId}/photos/{userSession.Pictures}.jpg";
-        return await DownloadToTempFile(objectKey, ct);
-    }
-    
-    /// <summary>
-    /// Get all user's pictures.
-    /// </summary>
-    /// <returns>List of streams. The calling code MUST call Dispose for each element.</returns>
-    public async Task<List<FileStream>> GetAll(UserSession userSession, CancellationToken ct)
-    {
-        var prefix = $"users/{userSession.ChatId}/photos/";
-        var streams = new List<FileStream>();
-
-        var listRequest = new ListObjectsV2Request
-        {
-            BucketName = _s3Options.Value.BucketName,
-            Prefix = prefix
-        };
-
-        var listResponse = await _s3Client.ListObjectsV2Async(listRequest, ct);
-
-        foreach (var s3Object in listResponse.S3Objects)
-        {
-            if (s3Object.Key.EndsWith("/")) continue;
-
-            var stream = await DownloadToTempFile(s3Object.Key, ct);
-            streams.Add(stream);
+            _s3Client = s3Client ?? throw new ArgumentNullException(nameof(s3Client));
+            _s3Options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
-        return streams;
-    }
-
-    private async Task<FileStream> DownloadToTempFile(string objectKey, CancellationToken ct)
-    {
-        var tempFilePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.jpg");
-
-        try
+        /// <summary>
+        /// Get all user's pictures.
+        /// </summary>
+        /// <remarks>
+        /// The calling code MUST Dispose() each returned <see cref="FileStream"/> (streams use DeleteOnClose).
+        /// This method downloads objects to temporary files and returns readable FileStreams that delete the temp file on close.
+        /// </remarks>
+        public async Task<List<FileStream>> Get(UserSession userSession, CancellationToken ct)
         {
-            using var response = await _s3Client.GetObjectAsync(new GetObjectRequest
+            ArgumentNullException.ThrowIfNull(userSession);
+            ct.ThrowIfCancellationRequested();
+
+            var prefix = GetUserPhotosFolder(userSession.ChatId);
+            var streams = new List<FileStream>();
+
+            var listRequest = new ListObjectsV2Request
             {
                 BucketName = _s3Options.Value.BucketName,
-                Key = objectKey
-            }, ct);
+                Prefix = prefix
+            };
 
-            await using (var tempFile = new FileStream(
-                             tempFilePath,
-                             FileMode.CreateNew,
-                             FileAccess.Write,
-                             FileShare.None,
-                             bufferSize: 81920,
-                             FileOptions.None))
+            ListObjectsV2Response listResponse;
+            do
             {
-                await response.ResponseStream.CopyToAsync(tempFile, ct);
-                await tempFile.FlushAsync(ct);
-            }
+                listResponse = await _s3Client.ListObjectsV2Async(listRequest, ct).ConfigureAwait(false);
 
-            return new FileStream(
-                tempFilePath,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.Read,
-                bufferSize: 4096,
-                FileOptions.DeleteOnClose);
+                foreach (var s3Object in listResponse.S3Objects)
+                {
+                    if (s3Object.Key.EndsWith("/")) continue;
+
+                    var stream = await DownloadToTempFile(s3Object.Key, ct).ConfigureAwait(false);
+                    streams.Add(stream);
+                }
+
+                listRequest.ContinuationToken = listResponse.NextContinuationToken;
+            }
+            while ((listResponse.IsTruncated ?? false) && !ct.IsCancellationRequested);
+
+            return streams;
         }
-        catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+
+        /// <summary>
+        /// Uploads the provided stream as a user's photo and returns the generated Guid.
+        /// The caller retains ownership of the stream; this method will not close it.
+        /// </summary>
+        public async Task<Guid> Put(long userId, Stream stream, CancellationToken ct)
         {
-            throw new FileNotFoundException($"S3 object not found: {objectKey}", ex);
+            ArgumentNullException.ThrowIfNull(stream);
+            ct.ThrowIfCancellationRequested();
+
+            var guid = Guid.NewGuid();
+            var key = GetUserPhotoKey(userId, guid);
+
+            if (stream.CanSeek)
+                stream.Position = 0;
+
+            var request = new PutObjectRequest
+            {
+                BucketName = _s3Options.Value.BucketName,
+                Key = key,
+                InputStream = stream,
+                ContentType = "image/jpeg",
+                AutoCloseStream = false
+            };
+
+            await _s3Client.PutObjectAsync(request, ct).ConfigureAwait(false);
+            return guid;
+        }
+
+        /// <summary>
+        /// Downloads S3 object into a temp file and returns a FileStream opened for read.
+        /// The returned FileStream has FileOptions.DeleteOnClose so the temp file is removed when stream disposed.
+        /// </summary>
+        private async Task<FileStream> DownloadToTempFile(string objectKey, CancellationToken ct)
+        {
+            var tempFilePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.jpg");
+
+            try
+            {
+                using var response = await _s3Client.GetObjectAsync(new GetObjectRequest
+                {
+                    BucketName = _s3Options.Value.BucketName,
+                    Key = objectKey
+                }, ct).ConfigureAwait(false);
+
+                await using (var tempFile = new FileStream(
+                                 tempFilePath,
+                                 FileMode.CreateNew,
+                                 FileAccess.Write,
+                                 FileShare.None,
+                                 bufferSize: 81920,
+                                 FileOptions.None))
+                {
+                    await response.ResponseStream.CopyToAsync(tempFile, ct).ConfigureAwait(false);
+                    await tempFile.FlushAsync(ct).ConfigureAwait(false);
+                }
+
+                return new FileStream(
+                    tempFilePath,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.Read,
+                    bufferSize: 4096,
+                    FileOptions.DeleteOnClose | FileOptions.SequentialScan);
+            }
+            catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new FileNotFoundException($"S3 object not found: {objectKey}", ex);
+            }
         }
     }
 }

@@ -10,9 +10,10 @@ namespace DatingTelegramBot.DialogSteps;
 
 public class AskForPlace : IDialogStep
 {
-    private readonly GeoService _geo;
     public DialogState State => DialogState.WaitingForPlace;
-
+    
+    private readonly GeoService _geo;
+    
     public AskForPlace(GeoService geo)
     {
         _geo = geo;
