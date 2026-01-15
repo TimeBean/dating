@@ -1,0 +1,14 @@
+digraph Dialog { rankdir=TB; node [fontname="Arial"]; 
+  "None" [shape=ellipse, style=filled, fillcolor=lightcoral, color=red];
+  "WaitingForAddDescription" [shape=box];
+  "WaitingForAge" [shape=box];
+  "WaitingForDescription" [shape=box];
+  "WaitingForName" [shape=box];
+  "WaitingForPlace" [shape=box];
+  "WaitingForAge" -> "WaitingForPlace" [color=gray, style=dashed];
+  "WaitingForDescription" -> "None" [color=gray, style=dashed];
+  "WaitingForAddDescription" -> "WaitingForDescription" [color=purple, label="update.CallbackQuery!.Data == 'AddDescriptionAgree'"];
+  "WaitingForAddDescription" -> "None" [color=purple, label="update.CallbackQuery.Data == 'AddDescriptionDisagree'"];
+  "WaitingForName" -> "WaitingForAge" [color=gray, style=dashed];
+  "WaitingForPlace" -> "WaitingForAddDescription" [color=gray, style=dashed];
+}

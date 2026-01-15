@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Dialog Graph</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  html,body,#network{height:100%;width:100%;margin:0;padding:0}
+  #infoPanel{position:fixed;right:12px;bottom:12px;width:480px;max-height:70%;overflow:auto;background:#fff;border:1px solid #ddd;border-radius:8px;padding:12px;font-family:Arial;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,0.08)}
+  #infoPanel h3{margin:6px 0 8px 0;font-size:15px}
+  #infoPanel pre{background:#f6f8fa;padding:8px;border-radius:6px;overflow:auto;font-size:12px;white-space:pre-wrap}
+  .muted{color:#666;font-size:12px}
+  .legend{position:absolute;right:12px;top:12px;background:#fff;padding:10px;border-radius:8px;border:1px solid #ddd;font-family:Arial;font-size:13px}
+</style>
+</head>
+<body>
+<div id="network"></div>
+
+<div id="infoPanel"><h3>Информация</h3><div class="muted">Нажмите на стрелку (edge), чтобы увидеть полное условие, файл и форматированный фрагмент кода.</div></div>
+
+<div class="legend">
+  <div><span style="display:inline-block;width:14px;height:12px;background:#eaf7ea;border:1px solid #2e7d32;margin-right:8px;"></span> Normal state</div>
+  <div><span style="display:inline-block;width:14px;height:12px;background:#ffecec;border:1px solid #ff6b6b;margin-right:8px;"></span> End (None)</div>
+  <div><span style="display:inline-block;width:14px;height:12px;background:#1976d2;margin-right:8px;"></span> Callback edge</div>
+  <div><span style="display:inline-block;width:14px;height:12px;background:#6a1b9a;margin-right:8px;"></span> Conditional edge</div>
+  <div><span style="display:inline-block;width:14px;height:12px;background:#888;margin-right:8px;"></span> Always (dashed)</div>
+</div>
+
+<script>
+const nodes = new vis.DataSet([{"id": "None", "label": "None", "x": 1560, "y": 640, "color": {"background": "#ffecec", "border": "#ff6b6b"}, "shape": "ellipse"}, {"id": "WaitingForAddDescription", "label": "WaitingForAddDescription", "x": 1170, "y": 480, "color": {"background": "#eaf7ea", "border": "#2e7d32"}, "shape": "box"}, {"id": "WaitingForAge", "label": "WaitingForAge", "x": 390, "y": 160, "color": {"background": "#eaf7ea", "border": "#2e7d32"}, "shape": "box"}, {"id": "WaitingForDescription", "label": "WaitingForDescription", "x": 1820, "y": 640, "color": {"background": "#eaf7ea", "border": "#2e7d32"}, "shape": "box"}, {"id": "WaitingForName", "label": "WaitingForName", "x": 0, "y": 0, "color": {"background": "#eaf7ea", "border": "#2e7d32"}, "shape": "box"}, {"id": "WaitingForPlace", "label": "WaitingForPlace", "x": 780, "y": 320, "color": {"background": "#eaf7ea", "border": "#2e7d32"}, "shape": "box"}]);
+const edges = new vis.DataSet([{"id": "e0", "from": "WaitingForAge", "to": "WaitingForPlace", "label": "", "fullLabel": "", "file": "AskAgeStep.cs", "preview": "State =&gt; DialogState.WaitingForAge;\n\n    public async Task HandleAsync(ITelegramBotClient bot, UserSession session, Update update, CancellationToken ct)\n    {\n        if (update.Type != UpdateType.Message)\n            return;\n        \n        session.Age = int.Parse(update.Message!.Text!);\n\n        session.State = DialogState.WaitingForPlace;\n\n        await bot.SendMessage(\n            update.Message.Chat.Id,\n            $&quot;Ясно, {session.Name}. Тебе {session.Age} лет. Откуда ты?&quot;,\n            cancellationToken: ct\n        );\n    }\n}", "color": {"color": "#888"}, "dashes": true, "arrows": "to", "font": {"size": 14, "align": "top", "vadjust": -16, "color": "#222"}}, {"id": "e1", "from": "WaitingForDescription", "to": "None", "label": "", "fullLabel": "", "file": "AskDescription.cs", "preview": "ption : IDialogStep\n{\n    public DialogState State =&gt; DialogState.WaitingForDescription;\n    \n    public async Task HandleAsync(ITelegramBotClient bot, UserSession session, Update update, CancellationToken ct)\n    {\n        if (update.Type != UpdateType.Message)\n            return;\n        \n        session.State = DialogState.None;\n        \n        session.Description = update.Message!.Text;\n        \n        await bot.SendMessage(\n            update.Message!.Chat.Id,\n            $&quot;Создание профиля завершено.&quot;,\n            cancellationToken: ct\n        );\n    }\n}", "color": {"color": "#888"}, "dashes": true, "arrows": "to", "font": {"size": 14, "align": "top", "vadjust": -16, "color": "#222"}}, {"id": "e2", "from": "WaitingForAddDescription", "to": "WaitingForDescription", "label": "update.CallbackQuery...AddDescriptionAgree\"", "fullLabel": "update.CallbackQuery!.Data == \"AddDescriptionAgree\"", "file": "AskForAddDescription.cs", "preview": "scription;\n    \n    public async Task HandleAsync(ITelegramBotClient bot, UserSession session, Update update, CancellationToken ct)\n    {\n        if (update.Type == UpdateType.CallbackQuery)\n        {\n            if (update.CallbackQuery!.Data == &quot;AddDescriptionAgree&quot;)\n            {\n                session.State = DialogState.WaitingForDescription;\n                \n                await bot.AnswerCallbackQuery(update.CallbackQuery.Id, cancellationToken: ct);\n                \n                await bot.SendMessage(\n                    update.CallbackQuery.From.Id,\n                    $&quot;Тогда, вв", "color": {"color": "#6a1b9a"}, "dashes": false, "arrows": "to", "font": {"size": 14, "align": "top", "vadjust": -16, "color": "#222"}}, {"id": "e3", "from": "WaitingForAddDescription", "to": "None", "label": "update.CallbackQuery...DescriptionDisagree\"", "fullLabel": "update.CallbackQuery.Data == \"AddDescriptionDisagree\"", "file": "AskForAddDescription.cs", "preview": "it bot.SendMessage(\n                    update.CallbackQuery.From.Id,\n                    $&quot;Тогда, введите описание.&quot;,\n                    cancellationToken: ct\n                );\n            }\n            else if (update.CallbackQuery.Data == &quot;AddDescriptionDisagree&quot;)\n            {\n                session.State = DialogState.None;\n                \n                await bot.AnswerCallbackQuery(update.CallbackQuery.Id, cancellationToken: ct);\n                \n                await bot.SendMessage(\n                    update.CallbackQuery.From.Id,\n                    $&quot;Создание профиля завершено", "color": {"color": "#6a1b9a"}, "dashes": false, "arrows": "to", "font": {"size": 14, "align": "top", "vadjust": -16, "color": "#222"}}, {"id": "e4", "from": "WaitingForName", "to": "WaitingForAge", "label": "", "fullLabel": "", "file": "AskNameStep.cs", "preview": "alogState State =&gt; DialogState.WaitingForName;\n\n    public async Task HandleAsync(ITelegramBotClient bot, UserSession session, Update update, CancellationToken ct)\n    {\n        if (update.Type != UpdateType.Message)\n            return;\n        \n        session.Name = update.Message!.Text;\n\n        session.State = DialogState.WaitingForAge;\n\n        await bot.SendMessage(\n            update.Message.Chat.Id,\n            $&quot;Приятно познакомиться, {update.Message.Text}! Сколько тебе лет?&quot;,\n            cancellationToken: ct\n        );\n    }\n}", "color": {"color": "#888"}, "dashes": true, "arrows": "to", "font": {"size": 14, "align": "top", "vadjust": -16, "color": "#222"}}, {"id": "e5", "from": "WaitingForPlace", "to": "WaitingForAddDescription", "label": "", "fullLabel": "", "file": "AskPlace.cs", "preview": "update.Type != UpdateType.Message)\n            return;\n        \n        var coords = await _geo.GeocodeAsync(update.Message!.Text!, ct);\n\n        if (coords != null)\n        {\n            session.Latitude = coords.Value.lat;\n            session.Longitude = coords.Value.lon;\n            \n            session.State = DialogState.WaitingForAddDescription;\n\n            await bot.SendMessage(\n                chatId: update.Message.Chat.Id,\n                text: $&quot;Так и запишем - {session.Latitude}, {session.Longitude}!\\nХочешь добавить описание?&quot;,\n                replyMarkup: new InlineKeyboardMarku", "color": {"color": "#888"}, "dashes": true, "arrows": "to", "font": {"size": 14, "align": "top", "vadjust": -16, "color": "#222"}}]);
+const container = document.getElementById('network');
+const data = {nodes, edges};
+const options = {
+  physics: false,
+  interaction: { hover: false, navigationButtons: true, keyboard: true },
+  nodes: { shape: 'box', margin: 10, font: { size: 14, face: 'Arial' } },
+  edges: { smooth: {enabled:true}, font: {size:14, color:'#222', align:'top', vadjust:-16} },
+};
+const network = new vis.Network(container, data, options);
+network.fit();
+
+// click -> show formatted info in right-bottom panel
+network.on('click', function(params) {
+  const info = document.getElementById('infoPanel');
+  if (params.edges && params.edges.length > 0) {
+    const eid = params.edges[0];
+    const ed = edges.get(eid);
+    let html = '<h3>Условие</h3>';
+    if (ed.fullLabel && ed.fullLabel.length>0) {
+      html += '<div style="font-weight:600;margin-bottom:6px;">' + ed.fullLabel + '</div>';
+    } else {
+      html += '<div class="muted">(нет условия — always)</div>';
+    }
+    html += '<h3>Файл</h3>';
+    html += '<div class="muted">' + (ed.file || '') + '</div>';
+    html += '<h3>Фрагмент кода</h3>';
+    html += '<pre>' + (ed.preview || '') + '</pre>';
+    info.innerHTML = html;
+  } else {
+    info.innerHTML = '<h3>Информация</h3><div class="muted">Нажмите на стрелку (edge), чтобы увидеть полное условие, файл и форматированный фрагмент кода.</div>';
+  }
+});
+</script>
+</body></html>
