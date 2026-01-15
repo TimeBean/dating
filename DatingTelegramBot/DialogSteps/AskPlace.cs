@@ -8,12 +8,12 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace DatingTelegramBot.DialogSteps;
 
-public class AskForPlace : IDialogStep
+public class AskPlace : IDialogStep
 {
     private readonly GeoService _geo;
     public DialogState State => DialogState.WaitingForPlace;
 
-    public AskForPlace(GeoService geo)
+    public AskPlace(GeoService geo)
     {
         _geo = geo;
     }

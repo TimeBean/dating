@@ -41,9 +41,9 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<IMessageHandler, DialogHandler>();
         services.AddSingleton<IDialogStep, AskNameStep>();
         services.AddSingleton<IDialogStep, AskAgeStep>();
-        services.AddSingleton<IDialogStep, AskForPlace>();
+        services.AddSingleton<IDialogStep, AskPlace>();
         services.AddSingleton<IDialogStep, AskForAddDescription>();
-        services.AddSingleton<IDialogStep, AskForDescription>();
+        services.AddSingleton<IDialogStep, AskDescription>();
         services.AddTransient<ICommandHandler, CommandHandler>();
         services.AddTransient<ICommand, StartCommand>();
         services.AddTransient<ICommand, ProfileCommand>();

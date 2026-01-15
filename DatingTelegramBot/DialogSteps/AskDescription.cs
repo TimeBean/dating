@@ -6,7 +6,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace DatingTelegramBot.DialogSteps;
 
-public class AskForDescription : IDialogStep
+public class AskDescription : IDialogStep
 {
     public DialogState State => DialogState.WaitingForDescription;
     
