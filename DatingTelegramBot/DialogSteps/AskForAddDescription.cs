@@ -29,7 +29,7 @@ public class AskForAddDescription : IDialogStep
             }
             else if (update.CallbackQuery.Data == "AddDescriptionDisagree")
             {
-                session.State = DialogState.None;
+                session.State = DialogState.Done;
                 
                 await bot.AnswerCallbackQuery(update.CallbackQuery.Id, cancellationToken: ct);
                 
@@ -38,10 +38,6 @@ public class AskForAddDescription : IDialogStep
                     $"Создание профиля завершено.",
                     cancellationToken: ct
                 );
-            }
-            else
-            {
-                throw new WrongStateException(State.ToString());
             }
         }
     }

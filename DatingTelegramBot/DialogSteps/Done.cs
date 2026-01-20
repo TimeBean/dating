@@ -6,22 +6,17 @@ using Telegram.Bot.Types.Enums;
 
 namespace DatingTelegramBot.DialogSteps;
 
-public class AskDescription : IDialogStep
+public class Done : IDialogStep
 {
-    public DialogState State => DialogState.WaitingForDescription;
-    
+    public DialogState State => DialogState.Done;
     public async Task HandleAsync(ITelegramBotClient bot, UserSession session, Update update, CancellationToken ct)
     {
         if (update.Type != UpdateType.Message)
             return;
         
-        session.State = DialogState.Done;
-        
-        session.Description = update.Message!.Text;
-        
         await bot.SendMessage(
             update.Message!.Chat.Id,
-            $"Создание профиля завершено.",
+            $"Всё уже настроенно, спасибо!",
             cancellationToken: ct
         );
     }

@@ -51,6 +51,8 @@ public class AskPlace : IDialogStep
         }
         else
         {
+            session.State = DialogState.Done;
+            
             await bot.SendMessage(
                 chatId: update.Message.Chat.Id,
                 text: $"Место не найдено. ${session.Name}, попробуйте переформулировать.",
