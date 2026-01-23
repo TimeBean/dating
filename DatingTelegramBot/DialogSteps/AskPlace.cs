@@ -51,7 +51,7 @@ public class AskPlace : IDialogStep
         }
         else
         {
-            session.State = DialogState.Done;
+            session.State = DialogState.WaitingForPlace;
             
             await bot.SendMessage(
                 chatId: update.Message.Chat.Id,
