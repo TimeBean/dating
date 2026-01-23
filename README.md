@@ -83,7 +83,6 @@ export API_BASE_URL="http://localhost:5000"
 ├── DatingAPIWrapper       # Client wrapper for the API
 ├── DatingContracts        # DTOs and shared contracts
 ├── DatingTelegramBot      # Telegram bot and dialog flows
-├── StepAnalyzer           # Visualization of dialog steps
 ├── Dating.sln
 ├── global.json
 └── LICENSE
