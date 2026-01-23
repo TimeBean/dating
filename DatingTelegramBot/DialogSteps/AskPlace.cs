@@ -55,7 +55,7 @@ public class AskPlace : IDialogStep
             
             await bot.SendMessage(
                 chatId: update.Message.Chat.Id,
-                text: $"Место не найдено. ${session.Name}, попробуйте переформулировать.",
+                text: $"Место не найдено. {session.Name}, попробуйте переформулировать.",
                 cancellationToken: ct
             );
         }
